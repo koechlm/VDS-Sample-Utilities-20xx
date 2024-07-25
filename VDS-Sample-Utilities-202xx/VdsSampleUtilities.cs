@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Autodesk.Connectivity.WebServices;
-using Autodesk.Connectivity.WebServicesTools;
-using Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities;
-using Autodesk.DataManagement.Client.Framework.Vault.Currency.Connections;
-using Autodesk.DataManagement.Client.Framework.Vault.Currency.PersistentId;
+using System.Drawing;
+using ACW = Autodesk.Connectivity.WebServices;
+using ACWT = Autodesk.Connectivity.WebServicesTools;
 using VDF = Autodesk.DataManagement.Client.Framework;
 using ACET = Autodesk.Connectivity.Explorer.ExtensibilityTools;
-using Inventor;
+using INV = Inventor;
 using AcInterop = Autodesk.AutoCAD.Interop;
 using AcInteropCom = Autodesk.AutoCAD.Interop.Common;
+using System.Windows.Media.Imaging;
 
 
 namespace VdsSampleUtilities
@@ -33,7 +32,7 @@ namespace VdsSampleUtilities
         /// <returns>User Credentials</returns>
         public Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials UserCredentials1(string server, string vault, string user, string pw)
         {
-            ServerIdentities mServer = new ServerIdentities();
+            ACW.ServerIdentities mServer = new ACW.ServerIdentities();
             mServer.DataServer = server;
             mServer.FileServer = server;
             Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials mCred = new Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials(mServer, vault, user, pw);
@@ -52,7 +51,7 @@ namespace VdsSampleUtilities
         /// <returns></returns>
         public Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials UserCredentials2(string server, string vault, string user, string pw, bool rw = true)
         {
-            ServerIdentities mServer = new ServerIdentities();
+            ACW.ServerIdentities mServer = new ACW.ServerIdentities();
             mServer.DataServer = server;
             mServer.FileServer = server;
             Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials mCred = new Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials(mServer, vault, user, pw, rw);
@@ -66,7 +65,7 @@ namespace VdsSampleUtilities
         /// <param name="FldIds"></param>
         /// <param name="m_PropArray"></param>
         /// <returns></returns>
-        public Boolean UpdateFolderProp2(WebServiceManager svc, long[] FldIds, PropInstParamArray[] m_PropArray)
+        public Boolean UpdateFolderProp2(ACWT.WebServiceManager svc, long[] FldIds, ACW.PropInstParamArray[] m_PropArray)
         {
             try
             {
@@ -91,18 +90,18 @@ namespace VdsSampleUtilities
         /// CO and ITEM cannot have linked children, as they use specific links to related child objects.</param>
         /// <param name="mFilter">Limit the search on links to a particular class; providing an empty value "" will result in a search on all types</param>
         /// <returns>List of entity Ids</returns>
-        public List<long> mGetLinkedChildren1(Connection con, long mId, string mClsId, string mFilter)
+        public List<long> mGetLinkedChildren1(VDF.Vault.Currency.Connections.Connection con, long mId, string mClsId, string mFilter)
         {
-            IEnumerable<PersistableIdEntInfo> mEntInfo = new PersistableIdEntInfo[] { new PersistableIdEntInfo(mClsId, mId, true, false) };
-            IDictionary<PersistableIdEntInfo, IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo);
-            IEntity mIEnt = null;
+            IEnumerable<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo> mEntInfo = new VDF.Vault.Currency.PersistentId.PersistableIdEntInfo[] { new VDF.Vault.Currency.PersistentId.PersistableIdEntInfo(mClsId, mId, true, false) };
+            IDictionary<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo, VDF.Vault.Currency.Entities.IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo);
+            VDF.Vault.Currency.Entities.IEntity mIEnt = null;
             try
             {
                 foreach (var item in mIEnts)
                 {
                     mIEnt = item.Value;
                 }
-                IEnumerable<IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt, mFilter);
+                IEnumerable<VDF.Vault.Currency.Entities.IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt, mFilter);
                 //return mLinkedChldrn;
                 List<long> mLinkedIds = new List<long>();
                 foreach (var item in mLinkedChldrn)
@@ -124,12 +123,12 @@ namespace VdsSampleUtilities
         /// <param name="mParEntIds"></param>
         /// <param name="mClsIds"></param>
         /// <returns></returns>
-        private IEnumerable<IEntity> GetLinkedChildren2(Connection con, long[] mParEntIds, string[] mClsIds)
+        private IEnumerable<VDF.Vault.Currency.Entities.IEntity> GetLinkedChildren2(VDF.Vault.Currency.Connections.Connection con, long[] mParEntIds, string[] mClsIds)
         {
-            List<PersistableIdEntInfo> mEntInfo = new List<PersistableIdEntInfo>();
+            List<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo> mEntInfo = new List<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo>();
             for (int i = 0; i < mParEntIds.Length; i++)
             {
-                mEntInfo.Add(new PersistableIdEntInfo("CUSTENT", mParEntIds[i], true, false));
+                mEntInfo.Add(new VDF.Vault.Currency.PersistentId.PersistableIdEntInfo("CUSTENT", mParEntIds[i], true, false));
             }
             //List<CustEnt> mEnts = new List<CustEnt>();
             //CustEnt mEnt = new CustEnt();
@@ -145,15 +144,15 @@ namespace VdsSampleUtilities
             //    mEntInfo.Add( new PersistableIdEntInfo(mClsIds[0], item.Id, true, false));
             //}
 
-            IDictionary<PersistableIdEntInfo, IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo.AsEnumerable());
-            List<IEntity> mIEnt = new List<IEntity>();
+            IDictionary<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo, VDF.Vault.Currency.Entities.IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo.AsEnumerable());
+            List<VDF.Vault.Currency.Entities.IEntity> mIEnt = new List<VDF.Vault.Currency.Entities.IEntity>();
             try
             {
                 foreach (var item in mIEnts)
                 {
                     mIEnt.Add(item.Value);
                 }
-                IEnumerable<IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt.AsEnumerable(), mClsIds.AsEnumerable());
+                IEnumerable<VDF.Vault.Currency.Entities.IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt.AsEnumerable(), mClsIds.AsEnumerable());
                 return mLinkedChldrn;
             }
             catch
@@ -243,14 +242,14 @@ namespace VdsSampleUtilities
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="FileId">File iteration Id</param>
         /// <param name="FileProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetFileProps(Connection conn, long FileId, ref Dictionary<string, string> FileProperties)
+        public void GetFileProps(VDF.Vault.Currency.Connections.Connection conn, long FileId, ref Dictionary<string, string> FileProperties)
         {
-            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
-            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FILE", new long[] { FileId });
+            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
+            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FILE", new long[] { FileId });
             string mPropDispName;
             string mPropVal;
             string mThumbnailDispName = mPropDefs.Where(n => n.SysName == "Thumbnail").FirstOrDefault().DispName;
-            foreach (PropInst mFilePropInst in mSourcePropInsts)
+            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
             {
                 mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
                 //filter thumbnail property
@@ -275,14 +274,14 @@ namespace VdsSampleUtilities
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="FolderId">Folder Id</param>
         /// <param name="FolderProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetFolderProps(Connection conn, long FolderId, ref Dictionary<string, string> FolderProperties)
+        public void GetFolderProps(VDF.Vault.Currency.Connections.Connection conn, long FolderId, ref Dictionary<string, string> FolderProperties)
         {
-            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FLDR");
-            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FLDR", new long[] { FolderId });
+            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FLDR");
+            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FLDR", new long[] { FolderId });
             string mPropDispName;
             string mPropVal;
 
-            foreach (PropInst mFilePropInst in mSourcePropInsts)
+            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
             {
                 mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
 
@@ -305,14 +304,14 @@ namespace VdsSampleUtilities
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="ItemId">Item Id</param>
         /// <param name="ItemProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetItemProps(Connection conn, long ItemId, ref Dictionary<string, string> ItemProperties)
+        public void GetItemProps(VDF.Vault.Currency.Connections.Connection conn, long ItemId, ref Dictionary<string, string> ItemProperties)
         {
-            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("ITEM");
-            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("ITEM", new long[] { ItemId });
+            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("ITEM");
+            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("ITEM", new long[] { ItemId });
             string mPropDispName;
             string mPropVal;
             string mThumbnailDispName = mPropDefs.Where(n => n.SysName == "Thumbnail").FirstOrDefault().DispName;
-            foreach (PropInst mFilePropInst in mSourcePropInsts)
+            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
             {
                 mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
                 //filter thumbnail property
@@ -337,14 +336,14 @@ namespace VdsSampleUtilities
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="CustentId">Custom Object Id</param>
         /// <param name="CustentProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetCustentProps(Connection conn, long CustentId, ref Dictionary<string, string> CustentProperties)
+        public void GetCustentProps(VDF.Vault.Currency.Connections.Connection conn, long CustentId, ref Dictionary<string, string> CustentProperties)
         {
-            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("CUSTENT");
-            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("CUSTENT", new long[] { CustentId });
+            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("CUSTENT");
+            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("CUSTENT", new long[] { CustentId });
             string mPropDispName;
             string mPropVal;
             string mThumbnailDispName = mPropDefs.Where(n => n.SysName == "Thumbnail").FirstOrDefault().DispName;
-            foreach (PropInst mFilePropInst in mSourcePropInsts)
+            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
             {
                 mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
                 //filter thumbnail property, as iLogic RuleArguments will fail reading it.
@@ -365,18 +364,100 @@ namespace VdsSampleUtilities
 
     }
 
+    /// <summary>
+    /// Class enabling the Document Tree
+    /// </summary>
+    public class TreeNode
+    {
+        private readonly VDF.Vault.Currency.Connections.Connection _con = null;
+        private readonly ACW.File _file = null;
+
+        ACWT.WebServiceManager _svc { get { return _con.WebServiceManager; } }
+        
+        /// <summary>
+        /// Filename
+        /// </summary>
+        public string Name { get { return _file.Name; } }
+
+        /// <summary>
+        /// Child references
+        /// </summary>
+        public List<TreeNode> Children
+        {
+            get
+            {
+                List<TreeNode> children = new List<TreeNode>();
+                ACW.FileAssocArray[] fileAssociations = _svc.DocumentService.GetLatestFileAssociationsByMasterIds(new long[] { _file.MasterId }, ACW.FileAssociationTypeEnum.None, false, ACW.FileAssociationTypeEnum.Dependency, false, false, false, false);
+                if (fileAssociations.First().FileAssocs != null)
+                    foreach (var fileAssociation in fileAssociations.First().FileAssocs)
+                        children.Add(new TreeNode(fileAssociation.CldFile, _con));
+                return children;
+            }
+        }
+
+        /// <summary>
+        /// Parent references
+        /// </summary>
+        public List<TreeNode> Parents
+        {
+            get
+            {
+                List<TreeNode> parents = new List<TreeNode>();
+                ACW.FileAssocArray[] fileAssociations = _svc.DocumentService.GetLatestFileAssociationsByMasterIds(new long[] { _file.MasterId }, ACW.FileAssociationTypeEnum.Dependency, false, ACW.FileAssociationTypeEnum.None, false, false, false, false);
+                if (fileAssociations.First().FileAssocs != null)
+                    foreach (var fileAssociation in fileAssociations.First().FileAssocs)
+                        parents.Add(new TreeNode(fileAssociation.ParFile, _con));
+                return parents;
+            }
+        }
+
+        /// <summary>
+        /// Get the Vault Entity Icon
+        /// </summary>
+        public BitmapImage Icon
+        {
+            get
+            {
+                var props = _con.PropertyManager.GetPropertyDefinitions("FILE", null, VDF.Vault.Currency.Properties.PropertyDefinitionFilter.IncludeAll);
+                var def = props["EntityIcon"];
+                var fileIter = new VDF.Vault.Currency.Entities.FileIteration(_con, _file);
+                VDF.Vault.Currency.Properties.ImageInfo prop = _con.PropertyManager.GetPropertyValue(fileIter, def, null) as VDF.Vault.Currency.Properties.ImageInfo;
+                System.IO.MemoryStream ms = new System.IO.MemoryStream();
+                prop.GetImage().Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                prop.Dispose();
+                System.Windows.Media.Imaging.BitmapImage bImg = new System.Windows.Media.Imaging.BitmapImage();
+                bImg.BeginInit();
+                bImg.StreamSource = ms;
+                bImg.EndInit();
+
+                return bImg;
+            }
+        }
+
+        /// <summary>
+        /// Return parent/child tree nodes of a file
+        /// </summary>
+        /// <param name="file">File</param>
+        /// <param name="con">Vault Connection</param>
+        public TreeNode(ACW.File file, VDF.Vault.Currency.Connections.Connection con)
+        {
+            _file = file;
+            _con = con;
+        }
+
+    }
 
     /// <summary>
     /// Class sharing options to interact with hosting Inventor session
     /// </summary>
     public class InvHelpers
     {
-        Inventor.Application m_Inv = null;
-        Inventor.Document m_Doc = null;
-        Inventor.DrawingDocument m_DrawDoc = null;
-        Inventor.PresentationDocument m_IpnDoc = null;
+        INV.Application m_Inv = null;
+        INV.Document m_Doc = null;
+        INV.DrawingDocument m_DrawDoc = null;
+        INV.PresentationDocument m_IpnDoc = null;
         String m_ModelPath = null;
-        Inventor.CommandManager m_InvCmdMgr = null;
+        INV.CommandManager m_InvCmdMgr = null;
 
         [System.Runtime.InteropServices.DllImport("User32.dll", SetLastError = true)]
         static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
@@ -392,11 +473,11 @@ namespace VdsSampleUtilities
         {
             try
             {
-                m_Inv = (Inventor.Application)m_InvApp;
+                m_Inv = (INV.Application)m_InvApp;
                 m_Doc = m_Inv.Documents.Open(m_ViewModelFullName, false);
-                foreach (PropertySet m_PropSet in m_Doc.PropertySets)
+                foreach (INV.PropertySet m_PropSet in m_Doc.PropertySets)
                 {
-                    foreach (Property m_Prop in m_PropSet)
+                    foreach (INV.Property m_Prop in m_PropSet)
                     {
                         if (m_Prop.Name == m_PropName)
                         {
@@ -422,13 +503,13 @@ namespace VdsSampleUtilities
         {
             try
             {
-                m_Inv = (Inventor.Application)m_InvApp;
+                m_Inv = (INV.Application)m_InvApp;
 
-                if (m_Inv.ActiveDocumentType == DocumentTypeEnum.kDrawingDocumentObject)
+                if (m_Inv.ActiveDocumentType == INV.DocumentTypeEnum.kDrawingDocumentObject)
                 {
-                    m_DrawDoc = (DrawingDocument)m_Inv.ActiveDocument;
-                    Sheet m_Sheet = m_DrawDoc.ActiveSheet;
-                    DrawingView m_DrwView = m_Sheet.DrawingViews[1];
+                    m_DrawDoc = (INV.DrawingDocument)m_Inv.ActiveDocument;
+                    INV.Sheet m_Sheet = m_DrawDoc.ActiveSheet;
+                    INV.DrawingView m_DrwView = m_Sheet.DrawingViews[1];
                     if (!(m_DrwView is null))
                     {
                         m_ModelPath = m_DrwView.ReferencedFile.FullFileName;
@@ -436,9 +517,9 @@ namespace VdsSampleUtilities
                     }
                 }
 
-                if (m_Inv.ActiveDocumentType == DocumentTypeEnum.kPresentationDocumentObject)
+                if (m_Inv.ActiveDocumentType == INV.DocumentTypeEnum.kPresentationDocumentObject)
                 {
-                    m_IpnDoc = (PresentationDocument)m_Inv.ActiveDocument;
+                    m_IpnDoc = (INV.PresentationDocument)m_Inv.ActiveDocument;
                     if (m_IpnDoc.ReferencedDocuments.Count >= 1)
                     {
                         m_ModelPath = m_IpnDoc.ReferencedDocuments[1].FullDocumentName;
@@ -462,12 +543,12 @@ namespace VdsSampleUtilities
         {
             try
             {
-                m_Inv = (Inventor.Application)m_InvApp;
+                m_Inv = (INV.Application)m_InvApp;
 
-                if (m_Inv.ActiveDocumentType == DocumentTypeEnum.kDrawingDocumentObject)
+                if (m_Inv.ActiveDocumentType == INV.DocumentTypeEnum.kDrawingDocumentObject)
                 {
-                    m_DrawDoc = (DrawingDocument)m_Inv.ActiveDocument;
-                    foreach (Sheet sheet in m_DrawDoc.Sheets)
+                    m_DrawDoc = (INV.DrawingDocument)m_Inv.ActiveDocument;
+                    foreach (INV.Sheet sheet in m_DrawDoc.Sheets)
                     {
                         if (sheet.DrawingViews.Count == 0 && sheet != m_DrawDoc.ActiveSheet)
                         {
@@ -487,12 +568,12 @@ namespace VdsSampleUtilities
         /// Return running Inventor application
         /// </summary>
         /// <returns></returns>
-        public Inventor.Application m_InventorApplication()
+        public INV.Application m_InventorApplication()
         {
             // Try to get an active instance of Inventor
             try
             {
-                return System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application") as Inventor.Application;
+                return System.Runtime.InteropServices.Marshal.GetActiveObject("INV.Application") as INV.Application;
             }
             catch
             {
@@ -508,7 +589,7 @@ namespace VdsSampleUtilities
         /// <returns></returns>
         public string m_ActiveDocFullFileName(object m_InvApp)
         {
-            m_Inv = (Inventor.Application)m_InvApp;
+            m_Inv = (INV.Application)m_InvApp;
             if (m_Inv.ActiveDocument != null)
             {
                 return m_Inv.ActiveDocument.FullFileName;
@@ -528,14 +609,14 @@ namespace VdsSampleUtilities
         /// <param name="m_CompFullFileName"></param>
         public void m_PlaceComponent(object m_InvApp, String m_CompFullFileName)
         {
-            m_Inv = (Inventor.Application)m_InvApp;
-            if (m_Inv.ActiveDocumentType == DocumentTypeEnum.kAssemblyDocumentObject)
+            m_Inv = (INV.Application)m_InvApp;
+            if (m_Inv.ActiveDocumentType == INV.DocumentTypeEnum.kAssemblyDocumentObject)
             {
                 try
                 {
                     m_InvCmdMgr = m_Inv.CommandManager;
-                    m_InvCmdMgr.PostPrivateEvent(PrivateEventTypeEnum.kFileNameEvent, m_CompFullFileName);
-                    Inventor.ControlDefinition m_InvCtrlDef = (ControlDefinition)m_InvCmdMgr.ControlDefinitions["AssemblyPlaceComponentCmd"];
+                    m_InvCmdMgr.PostPrivateEvent(INV.PrivateEventTypeEnum.kFileNameEvent, m_CompFullFileName);
+                    INV.ControlDefinition m_InvCtrlDef = (INV.ControlDefinition)m_InvCmdMgr.ControlDefinitions["AssemblyPlaceComponentCmd"];
                     //bring Inventor to front
                     IntPtr mWinPt = (IntPtr)m_Inv.MainFrameHWND;
                     SwitchToThisWindow(mWinPt, true);
@@ -556,10 +637,10 @@ namespace VdsSampleUtilities
         /// <returns></returns>
         public bool m_FDUActive(object mInvApp)
         {
-            m_Inv = (Application)mInvApp;
+            m_Inv = (INV.Application)mInvApp;
             try
             {
-                ApplicationAddIn mFDUAddIn = m_Inv.ApplicationAddIns.get_ItemById("{031C8B05-13C0-4C6C-B8FD-5A19DACCB64F}");
+                INV.ApplicationAddIn mFDUAddIn = m_Inv.ApplicationAddIns.get_ItemById("{031C8B05-13C0-4C6C-B8FD-5A19DACCB64F}");
                 if (mFDUAddIn != null)
                 {
                     if (mFDUAddIn.Activated)
@@ -585,7 +666,7 @@ namespace VdsSampleUtilities
         {
             try
             {
-                m_Inv = (Inventor.Application)m_InvApp;
+                m_Inv = (INV.Application)m_InvApp;
                 m_Doc = m_Inv.ActiveDocument;
                 if (m_Doc.DocumentInterests.HasInterest("factory.filetype.factory_layout_template"))
                 {
@@ -593,11 +674,11 @@ namespace VdsSampleUtilities
                     mFdsKeys.Add("FdsType", "FDS-Layout");
 
                     //FDS Property Set exists for syncronized layouts
-                    foreach (PropertySet m_PropSet in m_Doc.PropertySets)
+                    foreach (INV.PropertySet m_PropSet in m_Doc.PropertySets)
                     {
-                        if (m_PropSet.Name == "autodesk.factory.inventor.DwgInv")
+                        if (m_PropSet.Name == "autodesk.factory.INV.DwgInv")
                         {
-                            foreach (Property m_Prop in m_PropSet)
+                            foreach (INV.Property m_Prop in m_PropSet)
                             {
                                 mFdsKeys.Add(m_Prop.Name, m_Prop.Value);
                             }
@@ -629,12 +710,12 @@ namespace VdsSampleUtilities
         /// <returns></returns>
         public Dictionary<string, string> m_GetFdsAcadProps(object m_InvApp, Dictionary<string, string> mFdsKeys)
         {
-            Inventor.Document mDwgSource = null;
-            DefaultNonInventorDWGFileOpenBehaviorEnum mUserOpenOpt = DefaultNonInventorDWGFileOpenBehaviorEnum.kRegularOpenNonInventorDWGFile;
+            INV.Document mDwgSource = null;
+            INV.DefaultNonInventorDWGFileOpenBehaviorEnum mUserOpenOpt = INV.DefaultNonInventorDWGFileOpenBehaviorEnum.kRegularOpenNonInventorDWGFile;
 
             try
             {
-                m_Inv = (Inventor.Application)m_InvApp;
+                m_Inv = (INV.Application)m_InvApp;
                 m_Doc = m_Inv.ActiveDocument;
                 if (m_Doc.DocumentInterests.HasInterest("factory.filetype.factory_layout_template"))
                 {
@@ -642,11 +723,11 @@ namespace VdsSampleUtilities
                     mFdsKeys.Add("FdsType", "FDS-Layout");
 
                     //FDS Property Set exists for syncronized layouts
-                    foreach (PropertySet m_PropSet in m_Doc.PropertySets)
+                    foreach (INV.PropertySet m_PropSet in m_Doc.PropertySets)
                     {
-                        if (m_PropSet.Name == "autodesk.factory.inventor.DwgInv")
+                        if (m_PropSet.Name == "autodesk.factory.INV.DwgInv")
                         {
-                            foreach (Property m_Prop in m_PropSet)
+                            foreach (INV.Property m_Prop in m_PropSet)
                             {
                                 mFdsKeys.Add(m_Prop.Name, m_Prop.Value);
                             }
@@ -665,14 +746,14 @@ namespace VdsSampleUtilities
                                     string mFdsSourceFullFileName = mFdsPath + "\\" + mFdsKeys["DwgFileName"];
                                     //read inventor application option to reset later
                                     mUserOpenOpt = m_Inv.DrawingOptions.DefaultNonInventorDWGFileOpenBehavior;
-                                    m_Inv.DrawingOptions.DefaultNonInventorDWGFileOpenBehavior = DefaultNonInventorDWGFileOpenBehaviorEnum.kRegularOpenNonInventorDWGFile;
+                                    m_Inv.DrawingOptions.DefaultNonInventorDWGFileOpenBehavior = INV.DefaultNonInventorDWGFileOpenBehaviorEnum.kRegularOpenNonInventorDWGFile;
                                     mDwgSource = m_Inv.Documents.Open(mFdsSourceFullFileName, false);
                                     //Read the properties and add to dictionary if a value exists
-                                    foreach (PropertySet m_TempPropSet in mDwgSource.PropertySets)
+                                    foreach (INV.PropertySet m_TempPropSet in mDwgSource.PropertySets)
                                     {
                                         if (m_TempPropSet.DisplayName.Contains("Summary") || m_TempPropSet.DisplayName == "User Defined Properties")
                                         {
-                                            foreach (Property m_TempProp in m_TempPropSet)
+                                            foreach (INV.Property m_TempProp in m_TempPropSet)
                                             {
                                                 if (!string.IsNullOrEmpty(m_TempProp.Value))
                                                 {

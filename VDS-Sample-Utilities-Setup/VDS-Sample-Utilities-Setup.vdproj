@@ -33,62 +33,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6E30F8FF0828E744710A1ECBBCC9983E"
-        "OwnerKey" = "8:_CA71748D8E8732F09645A08324C69E49"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_9463826628B14E70873CE0646F4D27FD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_AA78B63F77F5D39FD49BC56EF4D3F1D1"
-        "OwnerKey" = "8:_6E30F8FF0828E744710A1ECBBCC9983E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_AA78B63F77F5D39FD49BC56EF4D3F1D1"
-        "OwnerKey" = "8:_F7A91165DE96EB32739B0359C4DB456A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_AA78B63F77F5D39FD49BC56EF4D3F1D1"
-        "OwnerKey" = "8:_FE30B5E7EF2F3178309A4FFD762C094F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_AA78B63F77F5D39FD49BC56EF4D3F1D1"
-        "OwnerKey" = "8:_E1FE1EE609B663205634AFA2A3ADDFF2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_AA78B63F77F5D39FD49BC56EF4D3F1D1"
-        "OwnerKey" = "8:_CA71748D8E8732F09645A08324C69E49"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_CA71748D8E8732F09645A08324C69E49"
-        "OwnerKey" = "8:_F48735E036BB4E95921C83B2D9BCA6C6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_DCB9A261F05F45F381FD15D97E6846CD"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E1FE1EE609B663205634AFA2A3ADDFF2"
-        "OwnerKey" = "8:_CA71748D8E8732F09645A08324C69E49"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -105,68 +57,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F7A91165DE96EB32739B0359C4DB456A"
-        "OwnerKey" = "8:_E1FE1EE609B663205634AFA2A3ADDFF2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FE30B5E7EF2F3178309A4FFD762C094F"
-        "OwnerKey" = "8:_E1FE1EE609B663205634AFA2A3ADDFF2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FE30B5E7EF2F3178309A4FFD762C094F"
-        "OwnerKey" = "8:_F7A91165DE96EB32739B0359C4DB456A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_FF8F8ED79C6E45FFA25A0C617B34A6FF"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F48735E036BB4E95921C83B2D9BCA6C6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CA71748D8E8732F09645A08324C69E49"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E1FE1EE609B663205634AFA2A3ADDFF2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F7A91165DE96EB32739B0359C4DB456A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FE30B5E7EF2F3178309A4FFD762C094F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6E30F8FF0828E744710A1ECBBCC9983E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_AA78B63F77F5D39FD49BC56EF4D3F1D1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -324,37 +216,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6E30F8FF0828E744710A1ECBBCC9983E"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:DevExpress.Data.Desktop.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_6E30F8FF0828E744710A1ECBBCC9983E"
-                    {
-                    "Name" = "8:DevExpress.Data.Desktop.v21.1.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DevExpress.Data.Desktop.v21.1.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_72DDF753455D4FFEAABB5ED48C50D46C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9463826628B14E70873CE0646F4D27FD"
             {
             "SourcePath" = "8:..\\VDS-Sample-Utilities-2023\\bin\\x64\\Release\\VdsSampleUtilities.pdb"
@@ -375,68 +236,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AA78B63F77F5D39FD49BC56EF4D3F1D1"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:DevExpress.Data.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_AA78B63F77F5D39FD49BC56EF4D3F1D1"
-                    {
-                    "Name" = "8:DevExpress.Data.v21.1.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DevExpress.Data.v21.1.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_72DDF753455D4FFEAABB5ED48C50D46C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_CA71748D8E8732F09645A08324C69E49"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:DevExpress.Utils.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_CA71748D8E8732F09645A08324C69E49"
-                    {
-                    "Name" = "8:DevExpress.Utils.v21.1.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DevExpress.Utils.v21.1.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_72DDF753455D4FFEAABB5ED48C50D46C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DCB9A261F05F45F381FD15D97E6846CD"
             {
             "SourcePath" = "8:..\\VDS-Sample-Utilities-2023\\bin\\x64\\Release\\VdsSampleUtilities.vcet.config"
@@ -455,37 +254,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E1FE1EE609B663205634AFA2A3ADDFF2"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:DevExpress.Printing.v21.1.Core, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_E1FE1EE609B663205634AFA2A3ADDFF2"
-                    {
-                    "Name" = "8:DevExpress.Printing.v21.1.Core.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DevExpress.Printing.v21.1.Core.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_72DDF753455D4FFEAABB5ED48C50D46C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F3852AEFD77A41BBA8F34435F27709FE"
@@ -515,11 +283,6 @@
             "AssemblyAsmDisplayName" = "8:VdsSampleUtilities, Version=2023.0.0.5, Culture=neutral, PublicKeyToken=b22d7b6c14b79ec9, processorArchitecture=AMD64"
                 "ScatterAssemblies"
                 {
-                    "_F48735E036BB4E95921C83B2D9BCA6C6"
-                    {
-                    "Name" = "8:VdsSampleUtilities.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:..\\VDS-Sample-Utilities-2023\\bin\\x64\\Release\\VdsSampleUtilities.dll"
             "TargetName" = "8:"
@@ -537,68 +300,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F7A91165DE96EB32739B0359C4DB456A"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:DevExpress.Pdf.v21.1.Drawing, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_F7A91165DE96EB32739B0359C4DB456A"
-                    {
-                    "Name" = "8:DevExpress.Pdf.v21.1.Drawing.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DevExpress.Pdf.v21.1.Drawing.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_72DDF753455D4FFEAABB5ED48C50D46C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FE30B5E7EF2F3178309A4FFD762C094F"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:DevExpress.Pdf.v21.1.Core, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_FE30B5E7EF2F3178309A4FFD762C094F"
-                    {
-                    "Name" = "8:DevExpress.Pdf.v21.1.Core.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DevExpress.Pdf.v21.1.Core.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_72DDF753455D4FFEAABB5ED48C50D46C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FF8F8ED79C6E45FFA25A0C617B34A6FF"
@@ -677,24 +378,24 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VDS-Sample-Utilities-EventHandler-Extension"
-        "ProductCode" = "8:{67AA3B4F-8D7A-431C-9853-028AD19E68B0}"
-        "PackageCode" = "8:{41CC6B89-86FC-4229-91EB-2799DA8C2594}"
+        "ProductCode" = "8:{267EEA6B-D905-401A-9C97-F65A5E5D2357}"
+        "PackageCode" = "8:{78335463-F491-4273-8EF2-0E65B5F8D58E}"
         "UpgradeCode" = "8:{A715C4AD-5352-46CE-9950-B7AEE0A7985E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.0.2024"
+        "ProductVersion" = "8:0.0.2025"
         "Manufacturer" = "8:Markus Koechl, Autodesk"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:https://github.com/koechlm/VDS-Sample-Utilities-2023/issues"
+        "ARPHELPLINK" = "8:https://github.com/koechlm/VDS-Sample-Utilities-20xx/issues"
         "Title" = "8:Setup VDS-Sample-Utilities-Extension"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Markus Koechl, Autodesk"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:Vault Data Standard 'VDS-PDMC-Sample' event handler and configuration extension"
-        "ARPURLINFOABOUT" = "8:https://github.com/koechlm/VDS-Sample-Utilities-2023"
+        "ARPURLINFOABOUT" = "8:https://github.com/koechlm/VDS-Sample-Utilities-20xx"
         "ARPPRODUCTICON" = "8:_3138830479CE41E28BC541F947A88E25"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"

@@ -46,11 +46,6 @@
       <param>Contains the restrictions to be displayed as well as options that control the behavior of the GUI.</param>
       <returns>The button clicked by the user.</returns>
     </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Forms.Library.ShowWarning(System.String,System.String,Autodesk.DataManagement.Client.Framework.Forms.Currency.ButtonConfiguration)">
-      <summary>Displays an warning dialog box with the specified message and title.</summary>
-      <param>The warning text to display in the dialog box.The Caption of the dialog box.The button selection that will be made available in the dialog box.</param>
-      <returns>The windows DialogResult which describes the button that was selected.</returns>
-    </member>
     <member name="M:Autodesk.DataManagement.Client.Framework.Forms.Library.ShowError(System.Exception,System.String)">
       <summary>Displays an error dialog box which displays information about a specific exception.</summary>
       <param>The exception object to display information for.The caption of the dialog box.</param>
@@ -90,6 +85,16 @@
       <returns>The windows DialogResult which describes the button that was selected. The following chart shows the possible return codes for each button.
 
 <list type="table"><listheader><term>Button</term><description>Return Code</description></listheader><item><term>"Abort", "Skip All"</term><description>DialogResult.Abort</description></item><item><term>"Cancel"</term><description>DialogResult.Cancel</description></item><item><term>"No"</term><description>DialogResult.No</description></item><item><term>"OK"</term><description>DialogResult.OK</description></item><item><term>"Retry"</term><description>DialogResult.Retry</description></item><item><term>"Skip"</term><description>DialogResult.Ignore</description></item><item><term>"Yes"</term><description>DialogResult.Yes</description></item></list></returns>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Forms.Library.ShowWarning(System.String,System.String,Autodesk.DataManagement.Client.Framework.Forms.Currency.ButtonConfiguration)">
+      <summary>Displays an warning dialog box with the specified message and title.</summary>
+      <param>The warning text to display in the dialog box.The Caption of the dialog box.The button selection that will be made available in the dialog box.</param>
+      <returns>The windows DialogResult which describes the button that was selected.</returns>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Forms.Library.ShowWarning(System.String,System.String,Autodesk.DataManagement.Client.Framework.Forms.Currency.ButtonConfiguration,System.Windows.Forms.IWin32Window)">
+      <summary>Displays an warning dialog box with the specified message and title.</summary>
+      <param>The warning text to display in the dialog box.The Caption of the dialog box.The button selection that will be made available in the dialog box.Message box owner.</param>
+      <returns>The windows DialogResult which describes the button that was selected.</returns>
     </member>
     <member name="P:Autodesk.DataManagement.Client.Framework.Forms.Library.ApplicationConfiguration">
       <summary>Gets the service which provides the ability to configure global characteristics of the framework. The configuration options range from directory locations,

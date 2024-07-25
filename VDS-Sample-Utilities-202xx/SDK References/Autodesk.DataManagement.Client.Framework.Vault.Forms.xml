@@ -99,15 +99,9 @@ specific entities or for specific properties of entities. These styles will be r
     <member name="F:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicVaultBrowserControl.BehaviorOptions.ViewStyle.LargeThumbnailView">
       <summary>A view which displays entities as a list of 128x128 thumbnail icons (and their entity name) flowing from left to right.</summary>
     </member>
-    <member name="T:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.VaultTreeControl.BehaviorOptions.ExpandBehaviorOptions">
-      <summary>Options for controlling expand behavior</summary>
-    </member>
-    <member name="F:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.VaultTreeControl.BehaviorOptions.ExpandBehaviorOptions.None">
-      <summary>Default Expand behavior</summary>
-    </member>
-    <member name="F:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.VaultTreeControl.BehaviorOptions.ExpandBehaviorOptions.MultiLevelExpandCausesRefresh">
-      <summary>When performing an "Expand N Levels" or "Expand All" operation on a node, the tree will remove all current children nodes from the specified node and
-re-request them from the IVaultTreeModel</summary>
+    <member name="T:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl">
+      <summary>A specialized combobox control which can a list of available Revisions/Versions for any Entity
+Entity.</summary>
     </member>
     <member name="T:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicVaultBrowserControl">
       <summary>A grid control which can display Vault Entities and their properties. Users can
@@ -131,9 +125,54 @@ navigate the vault by drilling down on the Entities.</summary>
     <member name="T:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicVaultNavigationPathComboboxControl">
       <summary>A combobox control which shows a navigation path from an Entity all the way up to a Root object. Each entity in the path is a selectable in the combobox.</summary>
     </member>
-    <member name="T:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl">
-      <summary>A specialized combobox control which can a list of available Revisions/Versions for any Entity
-Entity.</summary>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.#ctor">
+      <summary>Creates an instance of the RevisionsDropdownControl</summary>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.Clear">
+      <summary>Removes all Revision information from the control</summary>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.GetSelectedEntity">
+      <summary>Gets the selected entity (representing the chosen version/revision) from the control. The entity will only be valid (non-null) when the combo box was loaded
+with LoadVersions or LoadRevisions</summary>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.GetSelectedRevisionLabel">
+      <summary>Returns the selected Revision label.</summary>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.InitializeReadOnlyWithText(System.String)">
+      <summary>Initialize the revision control as readonly with the specified text. No revision information is loaded</summary>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.IsLatestSelected">
+      <summary>Returns true if the currently selected revision/version is the special "Latest" revision/version.</summary>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.LoadHistoricalRevisionReadOnly(Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.FileIteration,System.Boolean)">
+      <summary>Load this control to display the text for the specific revision of the specified file iteration and make the control read only. If date biased is true, then
+the text in the drop down will also show the specific version number of the file.</summary>
+      <param>The file to display revision forIf true, the text in the drop down will include the version number of the file</param>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.LoadHistoricalVersionReadOnly(Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.FileIteration)">
+      <summary>Load this control with the specific version for the specified file iteration and make the control read only</summary>
+      <param>The file to display versions for</param>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.LoadReadOnly(System.Boolean)">
+      <summary>Load this control in the readonly state.</summary>
+      <param>If true, the combobox will have an extra line in it to identify the Latest Revision</param>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.LoadRevisions(Autodesk.DataManagement.Client.Framework.Vault.Currency.Connections.Connection,Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.IEntity,System.Boolean,System.Boolean)">
+      <summary>Load this control with all of the revisions for an Entity object</summary>
+      <param>A connection to a Vault serverThe entity to display revisions forIf true, the combobox will have an extra line in it to identify the Latest Revision</param>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.LoadVersions(Autodesk.DataManagement.Client.Framework.Vault.Currency.Connections.Connection,Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.FileIteration,System.Boolean)">
+      <summary>Load this control with all of the versions for a file</summary>
+      <param>A connection to a Vault serverThe file to display versions forIf true, the combobox will have an extra line in it to identify the Latest Version</param>
+    </member>
+    <member name="P:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.AutoHeight">
+      <summary>Gets or sets whether the combobox will adjust it's height based on it's contents</summary>
+    </member>
+    <member name="P:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.ErrorMessage">
+      <summary>Returns the current error message if the control has encountered an error loading revisions. Null if there is no error.</summary>
+    </member>
+    <member name="E:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicRevisionsDropdownControl.SelectionChanged">
+      <summary>Occurs when the selected revision/version is changed through the drop-down menu.</summary>
     </member>
     <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicVaultBrowserControl.#ctor">
       <summary>Creates an instance of the ClassicVaultBrowserControl object</summary>
@@ -296,55 +335,6 @@ needs to collect information about the drag object.</summary>
     <member name="E:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.ClassicVaultNavigationPathComboboxControl.Exception">
       <summary>Event fired when an exception occurs</summary>
     </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.#ctor">
-      <summary>Creates an instance of the RevisionsDropdownControl</summary>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.Clear">
-      <summary>Removes all Revision information from the control</summary>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.GetSelectedEntity">
-      <summary>Gets the selected entity (representing the chosen version/revision) from the control. The entity will only be valid (non-null) when the combo box was loaded
-with LoadVersions or LoadRevisions</summary>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.GetSelectedRevisionLabel">
-      <summary>Returns the selected Revision label.</summary>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.InitializeReadOnlyWithText(System.String)">
-      <summary>Initialize the revision control as readonly with the specified text. No revision information is loaded</summary>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.IsLatestSelected">
-      <summary>Returns true if the currently selected revision/version is the special "Latest" revision/version.</summary>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.LoadHistoricalRevisionReadOnly(Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.FileIteration,System.Boolean)">
-      <summary>Load this control to display the text for the specific revision of the specified file iteration and make the control read only. If date biased is true, then
-the text in the drop down will also show the specific version number of the file.</summary>
-      <param>The file to display revision forIf true, the text in the drop down will include the version number of the file</param>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.LoadHistoricalVersionReadOnly(Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.FileIteration)">
-      <summary>Load this control with the specific version for the specified file iteration and make the control read only</summary>
-      <param>The file to display versions for</param>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.LoadReadOnly(System.Boolean)">
-      <summary>Load this control in the readonly state.</summary>
-      <param>If true, the combobox will have an extra line in it to identify the Latest Revision</param>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.LoadRevisions(Autodesk.DataManagement.Client.Framework.Vault.Currency.Connections.Connection,Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.IEntity,System.Boolean,System.Boolean)">
-      <summary>Load this control with all of the revisions for an Entity object</summary>
-      <param>A connection to a Vault serverThe entity to display revisions forIf true, the combobox will have an extra line in it to identify the Latest Revision</param>
-    </member>
-    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.LoadVersions(Autodesk.DataManagement.Client.Framework.Vault.Currency.Connections.Connection,Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities.FileIteration,System.Boolean)">
-      <summary>Load this control with all of the versions for a file</summary>
-      <param>A connection to a Vault serverThe file to display versions forIf true, the combobox will have an extra line in it to identify the Latest Version</param>
-    </member>
-    <member name="P:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.AutoHeight">
-      <summary>Gets or sets whether the combobox will adjust it's height based on it's contents</summary>
-    </member>
-    <member name="P:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.ErrorMessage">
-      <summary>Returns the current error message if the control has encountered an error loading revisions. Null if there is no error.</summary>
-    </member>
-    <member name="E:Autodesk.DataManagement.Client.Framework.Vault.Forms.Controls.RevisionsDropdownControl.SelectionChanged">
-      <summary>Occurs when the selected revision/version is changed through the drop-down menu.</summary>
-    </member>
     <member name="T:Autodesk.DataManagement.Client.Framework.Vault.Forms.Currency.ColumnSettings.HAlignment">
       <summary>Options for the horizontal alignment of content</summary>
     </member>
@@ -425,6 +415,9 @@ sorting data'.</summary>
     </member>
     <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Currency.ColumnImageList.#ctor">
       <summary>Constructs an instance of a ColumnImageList class</summary>
+    </member>
+    <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Currency.ColumnImageList.CleanUp">
+      <summary>Clear internal collections</summary>
     </member>
     <member name="M:Autodesk.DataManagement.Client.Framework.Vault.Forms.Currency.ColumnImageList.Clear">
       <summary>Removes all images from the image list</summary>
@@ -661,6 +654,9 @@ not handled.</summary>
       <summary>Help ID for the Get/Checkout Dialog accessed via the
 
 api</summary>
+    </member>
+    <member name="F:Autodesk.DataManagement.Client.Framework.Vault.Forms.Currency.HelpIds.ChangeVaultPasswordDialog">
+      <summary>Help ID for the ChangeVaultPasswordDialog</summary>
     </member>
     <member name="F:Autodesk.DataManagement.Client.Framework.Vault.Forms.Currency.HelpIds.CreateFolder">
       <summary>Help ID for the Create Folder Dialog accessed via the
