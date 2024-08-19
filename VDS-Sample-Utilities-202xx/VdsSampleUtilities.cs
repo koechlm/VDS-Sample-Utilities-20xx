@@ -456,6 +456,8 @@ namespace VdsSampleUtilities
         INV.Document m_Doc = null;
         INV.DrawingDocument m_DrawDoc = null;
         INV.PresentationDocument m_IpnDoc = null;
+        INV.AssemblyDocument m_AsmDoc = null;
+        INV.PartDocument m_PrtDoc = null;
         String m_ModelPath = null;
         INV.CommandManager m_InvCmdMgr = null;
 
@@ -463,7 +465,7 @@ namespace VdsSampleUtilities
         static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
 
         /// <summary>
-        /// Retrieve property value of main view referenced model
+        /// DEPRECATED - Use m_GetInventorPropertyValue instead (Retrieve property value of main view referenced model)
         /// </summary>
         /// <param name="m_InvApp">Connect to the hosting instance of the VDS dialog</param>
         /// <param name="m_ViewModelFullName"></param>
@@ -480,6 +482,37 @@ namespace VdsSampleUtilities
                     foreach (INV.Property m_Prop in m_PropSet)
                     {
                         if (m_Prop.Name == m_PropName)
+                        {
+                            return m_Prop.Value;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Retrieve property value of the given Inventor file.
+        /// </summary>
+        /// <param name="InventorApplication">Connect to the hosting instance of the VDS dialog $Application</param>
+        /// <param name="FullFileName"></param>
+        /// <param name="PropertyName">Display Name</param>
+        /// <returns></returns>
+        public object m_GetInventorPropertyValue(object InventorApplication, String FullFileName, String PropertyName)
+        {
+            try
+            {
+                m_Inv = (INV.Application)InventorApplication;
+                m_Doc = m_Inv.Documents.Open(FullFileName, false);
+                foreach (INV.PropertySet m_PropSet in m_Doc.PropertySets)
+                {
+                    foreach (INV.Property m_Prop in m_PropSet)
+                    {
+                        if (m_Prop.Name == PropertyName)
                         {
                             return m_Prop.Value;
                         }
@@ -523,6 +556,36 @@ namespace VdsSampleUtilities
                     if (m_IpnDoc.ReferencedDocuments.Count >= 1)
                     {
                         m_ModelPath = m_IpnDoc.ReferencedDocuments[1].FullDocumentName;
+                        return m_ModelPath;
+                    }
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the 3D model file path of the first Shrinkwrap Feature's referenced file.
+        /// </summary>
+        /// <param name="m_InvApp">Running host (instance of Inventor) of calling VDS Dialog.</param>
+        /// <returns>Returns the fullfilename (path\filename.ext) of the referenced model as string.</returns>
+        public String m_GetShrinkWrapParentFullFileName(object m_InvApp)
+        {
+            try
+            {
+                m_Inv = (INV.Application)m_InvApp;
+
+                if (m_Inv.ActiveDocumentType == INV.DocumentTypeEnum.kPartDocumentObject)
+                {
+                    m_PrtDoc = (INV.PartDocument)m_Inv.ActiveDocument;
+                    INV.PartComponentDefinition componentDefinition = m_PrtDoc.ComponentDefinition;
+                    INV.ShrinkwrapComponent shrinkwrapComponent = componentDefinition.ReferenceComponents.ShrinkwrapComponents[1];
+                    if ((shrinkwrapComponent?.ReferencedFile != null))
+                    {
+                        m_ModelPath = shrinkwrapComponent.ReferencedFile.FullFileName;
                         return m_ModelPath;
                     }
                 }
