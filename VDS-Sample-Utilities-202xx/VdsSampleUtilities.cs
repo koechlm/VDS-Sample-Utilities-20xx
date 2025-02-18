@@ -373,7 +373,7 @@ namespace VdsSampleUtilities
         private readonly ACW.File _file = null;
 
         ACWT.WebServiceManager _svc { get { return _con.WebServiceManager; } }
-        
+
         /// <summary>
         /// Filename
         /// </summary>
@@ -731,37 +731,38 @@ namespace VdsSampleUtilities
             {
                 m_Inv = (INV.Application)m_InvApp;
                 m_Doc = m_Inv.ActiveDocument;
-                if (m_Doc.DocumentInterests.HasInterest("factory.filetype.factory_layout_template"))
+                if (m_Doc != null)
                 {
-                    //FDS Type
-                    mFdsKeys.Add("FdsType", "FDS-Layout");
-
-                    //FDS Property Set exists for syncronized layouts
-                    foreach (INV.PropertySet m_PropSet in m_Doc.PropertySets)
+                    if (m_Doc.DocumentInterests.HasInterest("factory.filetype.factory_layout_template"))
                     {
-                        if (m_PropSet.Name == "autodesk.factory.INV.DwgInv")
+                        //FDS Type
+                        mFdsKeys.Add("FdsType", "FDS-Layout");
+
+                        //FDS Property Set exists for syncronized layouts
+                        foreach (INV.PropertySet m_PropSet in m_Doc.PropertySets)
                         {
-                            foreach (INV.Property m_Prop in m_PropSet)
+                            if (m_PropSet.Name == "autodesk.factory.INV.DwgInv")
                             {
-                                mFdsKeys.Add(m_Prop.Name, m_Prop.Value);
+                                foreach (INV.Property m_Prop in m_PropSet)
+                                {
+                                    mFdsKeys.Add(m_Prop.Name, m_Prop.Value);
+                                }
+                                //Get Fullname set by synchronization, to avoid save to other location
+                                mFdsKeys.Add("FdsNewFullFileName", m_Doc.File.FullFileName);
+                                System.IO.FileInfo mFdsFileInfo = new System.IO.FileInfo(m_Doc.File.FullFileName);
+                                string mFdsPath = mFdsFileInfo.Directory.FullName;
+                                mFdsKeys.Add("FdsNewPath", mFdsPath);
                             }
-                            //Get Fullname set by synchronization, to avoid save to other location
-                            mFdsKeys.Add("FdsNewFullFileName", m_Doc.File.FullFileName);
-                            System.IO.FileInfo mFdsFileInfo = new System.IO.FileInfo(m_Doc.File.FullFileName);
-                            string mFdsPath = mFdsFileInfo.Directory.FullName;
-                            mFdsKeys.Add("FdsNewPath", mFdsPath);
                         }
                     }
-                }
-                if (m_Doc.DocumentInterests.HasInterest("factory.filetype.factory_asset"))
-                {
-                    mFdsKeys.Add("FdsType", "FDS-Asset");
+                    if (m_Doc.DocumentInterests.HasInterest("factory.filetype.factory_asset"))
+                    {
+                        mFdsKeys.Add("FdsType", "FDS-Asset");
+                    }
                 }
             }
             catch (Exception)
-            {
-                throw;
-            }
+            { }
             return mFdsKeys;
         }
 
