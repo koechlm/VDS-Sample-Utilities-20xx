@@ -1,42 +1,125 @@
-﻿using System;
+﻿using Autodesk.Connectivity.WebServices;
+using Autodesk.Connectivity.WebServicesTools;
+using Autodesk.DataManagement.Client.Framework.Vault.Currency.Connections;
+using Autodesk.DataManagement.Client.Framework.Vault.Currency.Entities;
+using Autodesk.DataManagement.Client.Framework.Vault.Currency.PersistentId;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
-using ACW = Autodesk.Connectivity.WebServices;
-using ACWT = Autodesk.Connectivity.WebServicesTools;
-using VDF = Autodesk.DataManagement.Client.Framework;
+using System.Windows.Media.Imaging;
 using ACET = Autodesk.Connectivity.Explorer.ExtensibilityTools;
-using INV = Inventor;
 using AcInterop = Autodesk.AutoCAD.Interop;
 using AcInteropCom = Autodesk.AutoCAD.Interop.Common;
-using System.Windows.Media.Imaging;
+using ACW = Autodesk.Connectivity.WebServices;
+using ACWT = Autodesk.Connectivity.WebServicesTools;
+using INV = Inventor;
+using VDF = Autodesk.DataManagement.Client.Framework;
 
 
 namespace VdsSampleUtilities
 {
+    #region VltHelpers Class
+
     /// <summary>
-    /// Class extending VDS Vault scripts
+    /// Provides helper methods for extending VDS Vault scripts.
     /// </summary>
     public class VltHelpers
     {
+        private byte[] _virtualCompThumbnail;
+        private IEnumerable<object> occurrences;
+
         /// <summary>
-        /// UserCredentials1 and UserCredentials2 differentiate overloads as powershell can't handle
-        /// UserCredentials1 returns read-write loginuser object
+        /// Gets an image resource as a byte array in PNG format
         /// </summary>
-        /// <param name="server">IP Address or DNS Name of ADMS Server</param>
-        /// <param name="vault">Name of vault to connect to</param>
-        /// <param name="user">User name</param>
-        /// <param name="pw">Password</param>
-        /// <returns>User Credentials</returns>
-        public Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials UserCredentials1(string server, string vault, string user, string pw)
+        /// <param name="resourceName">The name of the image resource (e.g., "VirtualComp_32")</param>
+        /// <returns>Byte array containing the image in PNG format, or an empty array if the resource cannot be loaded</returns>
+        private static byte[] GetImageResourceAsByteArray(string resourceName)
         {
-            ACW.ServerIdentities mServer = new ACW.ServerIdentities();
-            mServer.DataServer = server;
-            mServer.FileServer = server;
-            Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials mCred = new Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials(mServer, vault, user, pw);
-            return mCred;
+            try
+            {
+                var resourceManager = new System.Resources.ResourceManager(
+                    "VDSSampleUtilities.Properties.Resources",
+                    typeof(VltHelpers).Assembly);
+
+                using (var bitmap = resourceManager.GetObject(resourceName) as System.Drawing.Bitmap)
+                {
+                    if (bitmap != null)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                            return ms.ToArray();
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // If resource loading fails, return empty array
+            }
+
+            return Array.Empty<byte>();
+        }
+
+        /// <summary>
+        /// Gets an image from a local file as a byte array in PNG format
+        /// </summary>
+        /// <param name="filePath">The full path and filename of the image file</param>
+        /// <param name="isFilePath">Must be set to true to indicate this is a file path (used to differentiate overloads)</param>
+        /// <returns>Byte array containing the image in PNG format, or an empty array if the file cannot be loaded</returns>
+        private static byte[] GetImageResourceAsByteArray(string filePath, bool isFilePath)
+        {
+            if (!isFilePath)
+            {
+                return GetImageResourceAsByteArray(filePath);
+            }
+
+            try
+            {
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return Array.Empty<byte>();
+                }
+
+                using (var bitmap = new System.Drawing.Bitmap(filePath))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        return ms.ToArray();
+                    }
+                }
+            }
+            catch
+            {
+                // If file loading fails, return empty array
+            }
+
+            return Array.Empty<byte>();
+        }
+
+        /// <summary>
+        /// Creates user credentials for connecting to a Vault server.
+        /// </summary>
+        /// <param name="server">The IP address or DNS name of the ADMS server.</param>
+        /// <param name="vault">The name of the Vault to connect to.</param>
+        /// <param name="user">The username for authentication.</param>
+        /// <param name="pw">The password for authentication.</param>
+        /// <returns>A <see cref="Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials"/> object for the specified server and Vault.</returns>
+        public static Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials UserCredentials1(string server, string vault, string user, string pw)
+        {
+            // Simplify object initialization and ensure platform compatibility
+            var mServer = new ServerIdentities
+            {
+                DataServer = server,
+                FileServer = server
+            };
+
+            return new Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials(mServer, vault, user, pw);
         }
 
         /// <summary>
@@ -51,11 +134,14 @@ namespace VdsSampleUtilities
         /// <returns></returns>
         public Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials UserCredentials2(string server, string vault, string user, string pw, bool rw = true)
         {
-            ACW.ServerIdentities mServer = new ACW.ServerIdentities();
-            mServer.DataServer = server;
-            mServer.FileServer = server;
-            Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials mCred = new Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials(mServer, vault, user, pw, rw);
-            return mCred;
+            // Simplify object initialization and ensure platform compatibility
+            var mServer = new ServerIdentities
+            {
+                DataServer = server,
+                FileServer = server
+            };
+
+            return new Autodesk.Connectivity.WebServicesTools.UserPasswordCredentials(mServer, vault, user, pw, rw);
         }
 
         /// <summary>
@@ -63,13 +149,13 @@ namespace VdsSampleUtilities
         /// </summary>
         /// <param name="svc"></param>
         /// <param name="FldIds"></param>
-        /// <param name="m_PropArray"></param>
+        /// <param name="propArray"></param>
         /// <returns></returns>
-        public Boolean UpdateFolderProp2(ACWT.WebServiceManager svc, long[] FldIds, ACW.PropInstParamArray[] m_PropArray)
+        public Boolean UpdateFolderProp2(WebServiceManager svc, long[] FldIds, PropInstParamArray[] propArray)
         {
             try
             {
-                svc.DocumentServiceExtensions.UpdateFolderProperties(FldIds, m_PropArray);
+                svc.DocumentServiceExtensions.UpdateFolderProperties(FldIds, propArray);
                 return true;
             }
             catch
@@ -90,18 +176,18 @@ namespace VdsSampleUtilities
         /// CO and ITEM cannot have linked children, as they use specific links to related child objects.</param>
         /// <param name="mFilter">Limit the search on links to a particular class; providing an empty value "" will result in a search on all types</param>
         /// <returns>List of entity Ids</returns>
-        public List<long> mGetLinkedChildren1(VDF.Vault.Currency.Connections.Connection con, long mId, string mClsId, string mFilter)
+        public List<long> mGetLinkedChildren1(Connection con, long mId, string mClsId, string mFilter)
         {
-            IEnumerable<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo> mEntInfo = new VDF.Vault.Currency.PersistentId.PersistableIdEntInfo[] { new VDF.Vault.Currency.PersistentId.PersistableIdEntInfo(mClsId, mId, true, false) };
-            IDictionary<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo, VDF.Vault.Currency.Entities.IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo);
-            VDF.Vault.Currency.Entities.IEntity mIEnt = null;
+            IEnumerable<PersistableIdEntInfo> mEntInfo = new PersistableIdEntInfo[] { new PersistableIdEntInfo(mClsId, mId, true, false) };
+            IDictionary<PersistableIdEntInfo, IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo);
+            IEntity mIEnt = null;
             try
             {
                 foreach (var item in mIEnts)
                 {
                     mIEnt = item.Value;
                 }
-                IEnumerable<VDF.Vault.Currency.Entities.IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt, mFilter);
+                IEnumerable<IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt, mFilter);
                 //return mLinkedChldrn;
                 List<long> mLinkedIds = new List<long>();
                 foreach (var item in mLinkedChldrn)
@@ -123,36 +209,23 @@ namespace VdsSampleUtilities
         /// <param name="mParEntIds"></param>
         /// <param name="mClsIds"></param>
         /// <returns></returns>
-        private IEnumerable<VDF.Vault.Currency.Entities.IEntity> GetLinkedChildren2(VDF.Vault.Currency.Connections.Connection con, long[] mParEntIds, string[] mClsIds)
+        private static IEnumerable<IEntity> GetLinkedChildren2(Connection con, long[] mParEntIds, string[] mClsIds)
         {
-            List<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo> mEntInfo = new List<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo>();
+            List<PersistableIdEntInfo> mEntInfo = new List<PersistableIdEntInfo>();
             for (int i = 0; i < mParEntIds.Length; i++)
             {
-                mEntInfo.Add(new VDF.Vault.Currency.PersistentId.PersistableIdEntInfo("CUSTENT", mParEntIds[i], true, false));
+                mEntInfo.Add(new PersistableIdEntInfo("CUSTENT", mParEntIds[i], true, false));
             }
-            //List<CustEnt> mEnts = new List<CustEnt>();
-            //CustEnt mEnt = new CustEnt();
-            //foreach (var item in mParentEnts)
-            //{
-            //    mEnt = (CustEnt)item;
-            //    mEnts.Add(mEnt);
-            //}
-            //List<PersistableIdEntInfo> mEntInfo = new List<PersistableIdEntInfo>();
-            //foreach (var item in mEnts)
 
-            //{
-            //    mEntInfo.Add( new PersistableIdEntInfo(mClsIds[0], item.Id, true, false));
-            //}
-
-            IDictionary<VDF.Vault.Currency.PersistentId.PersistableIdEntInfo, VDF.Vault.Currency.Entities.IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo.AsEnumerable());
-            List<VDF.Vault.Currency.Entities.IEntity> mIEnt = new List<VDF.Vault.Currency.Entities.IEntity>();
+            IDictionary<PersistableIdEntInfo, IEntity> mIEnts = con.EntityOperations.ConvertEntInfosToIEntities(mEntInfo.AsEnumerable());
+            List<IEntity> mIEnt = new List<IEntity>();
             try
             {
                 foreach (var item in mIEnts)
                 {
                     mIEnt.Add(item.Value);
                 }
-                IEnumerable<VDF.Vault.Currency.Entities.IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt.AsEnumerable(), mClsIds.AsEnumerable());
+                IEnumerable<IEntity> mLinkedChldrn = con.LinkManager.GetLinkedChildren(mIEnt.AsEnumerable(), mClsIds.AsEnumerable());
                 return mLinkedChldrn;
             }
             catch
@@ -242,16 +315,16 @@ namespace VdsSampleUtilities
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="FileId">File iteration Id</param>
         /// <param name="FileProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetFileProps(VDF.Vault.Currency.Connections.Connection conn, long FileId, ref Dictionary<string, string> FileProperties)
+        public void GetFileProps(Connection conn, long FileId, ref Dictionary<string, string> FileProperties)
         {
-            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
-            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FILE", new long[] { FileId });
+            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
+            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FILE", new long[] { FileId });
             string mPropDispName;
             string mPropVal;
-            string mThumbnailDispName = mPropDefs.Where(n => n.SysName == "Thumbnail").FirstOrDefault().DispName;
-            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
+            string mThumbnailDispName = mPropDefs.FirstOrDefault(n => n.SysName == "Thumbnail").DispName;
+            foreach (PropInst mFilePropInst in mSourcePropInsts)
             {
-                mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
+                mPropDispName = mPropDefs.FirstOrDefault(n => n.Id == mFilePropInst.PropDefId).DispName;
                 //filter thumbnail property
                 if (mPropDispName != mThumbnailDispName)
                 {
@@ -273,15 +346,15 @@ namespace VdsSampleUtilities
         /// </summary>
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="FolderId">Folder Id</param>
-        /// <param name="FolderProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetFolderProps(VDF.Vault.Currency.Connections.Connection conn, long FolderId, ref Dictionary<string, string> FolderProperties)
+        /// <param name="FolderProperties">Name-Value map of Display Name and Values. All Values return as text.</param>        
+        public void GetFolderProps(Connection conn, long FolderId, ref Dictionary<string, string> FolderProperties)
         {
-            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FLDR");
-            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FLDR", new long[] { FolderId });
+            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FLDR");
+            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("FLDR", new long[] { FolderId });
             string mPropDispName;
             string mPropVal;
 
-            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
+            foreach (PropInst mFilePropInst in mSourcePropInsts)
             {
                 mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
 
@@ -304,14 +377,14 @@ namespace VdsSampleUtilities
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="ItemId">Item Id</param>
         /// <param name="ItemProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetItemProps(VDF.Vault.Currency.Connections.Connection conn, long ItemId, ref Dictionary<string, string> ItemProperties)
+        public void GetItemProps(Connection conn, long ItemId, ref Dictionary<string, string> ItemProperties)
         {
-            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("ITEM");
-            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("ITEM", new long[] { ItemId });
+            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("ITEM");
+            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("ITEM", new long[] { ItemId });
             string mPropDispName;
             string mPropVal;
             string mThumbnailDispName = mPropDefs.Where(n => n.SysName == "Thumbnail").FirstOrDefault().DispName;
-            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
+            foreach (PropInst mFilePropInst in mSourcePropInsts)
             {
                 mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
                 //filter thumbnail property
@@ -336,14 +409,15 @@ namespace VdsSampleUtilities
         /// <param name="conn">Current Vault connection ($VaultConnection)</param>
         /// <param name="CustentId">Custom Object Id</param>
         /// <param name="CustentProperties">Name-Value map of Display Name and Values. All Values return as text.</param>
-        public void GetCustentProps(VDF.Vault.Currency.Connections.Connection conn, long CustentId, ref Dictionary<string, string> CustentProperties)
+
+        public void GetCustentProps(Connection conn, long CustentId, ref Dictionary<string, string> CustentProperties)
         {
-            ACW.PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("CUSTENT");
-            ACW.PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("CUSTENT", new long[] { CustentId });
+            PropDef[] mPropDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("CUSTENT");
+            PropInst[] mSourcePropInsts = conn.WebServiceManager.PropertyService.GetPropertiesByEntityIds("CUSTENT", new long[] { CustentId });
             string mPropDispName;
             string mPropVal;
             string mThumbnailDispName = mPropDefs.Where(n => n.SysName == "Thumbnail").FirstOrDefault().DispName;
-            foreach (ACW.PropInst mFilePropInst in mSourcePropInsts)
+            foreach (PropInst mFilePropInst in mSourcePropInsts)
             {
                 mPropDispName = mPropDefs.Where(n => n.Id == mFilePropInst.PropDefId).FirstOrDefault().DispName;
                 //filter thumbnail property, as iLogic RuleArguments will fail reading it.
@@ -362,7 +436,772 @@ namespace VdsSampleUtilities
             }
         }
 
+        #region CAD-BOM methods
+        /// <summary>
+        /// Represents a single row in a Bill of Materials (BOM)
+        /// </summary>
+        public class BomRow
+        {
+            public int Position { get; set; }
+            public string PartNumber { get; set; }
+            public string ComponentType { get; set; }
+            public float Quantity { get; set; }
+            public string Name { get; set; }
+            public byte[] Thumbnail { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string Material { get; set; }
+            public string FunctionalDesignation { get; set; }
+        }
+
+        /// <summary>
+        /// Represents a Bill of Materials containing multiple BOM items
+        /// </summary>
+        public class Bom
+        {
+            public List<BomRow> BOMItems { get; set; } = new List<BomRow>();
+        }
+
+        /// <summary>
+        /// Get model states or configurations from a file's BOM structure
+        /// </summary>
+        /// <param name="conn">Vault connection</param>
+        /// <param name="fileId">File ID to get model states from</param>
+        /// <returns>Dictionary of model state names and their IDs</returns>
+        public Dictionary<string, long> GetModelStates(Connection conn, long fileId)
+        {
+            var mFileBOM = conn.WebServiceManager.DocumentService.GetBOMByFileId(fileId);
+            var mFile = conn.WebServiceManager.DocumentService.GetFileById(fileId);
+
+            var propDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
+            var providerPropDef = propDefs.FirstOrDefault(n => n.SysName == "Provider");
+
+            string mCadProvider = "Unknown";
+            if (providerPropDef != null)
+            {
+                var providerProp = conn.WebServiceManager.PropertyService.GetProperties("FILE", new long[] { fileId }, new long[] { providerPropDef.Id })[0];
+                var providerValue = providerProp.Val != null ? providerProp.Val.ToString() : null;
+
+                if (providerValue != null && providerValue.Contains("Inventor"))
+                {
+                    mCadProvider = "Inventor";
+                }
+                else if (providerValue != null && providerValue.Contains("SolidWorks"))
+                {
+                    mCadProvider = "SolidWorks";
+                }
+            }
+
+            var msArray = new List<BOMComp>();
+
+            if (mCadProvider == "SolidWorks")
+            {
+                msArray = mFileBOM.CompArray.Where(c =>
+                    c.XRefId == -1 &&
+                    c.UniqueId != null &&
+                    c.UniqueId.Contains("@")
+                ).ToList();
+            }
+            else if (mCadProvider == "Inventor")
+            {
+                msArray = mFileBOM.CompArray.Where(c =>
+                    c.XRefId == -1 && (
+                        (c.UniqueId != null && c.UniqueId.StartsWith("MS:")) ||
+                        (c.Name != null && System.Text.RegularExpressions.Regex.IsMatch(c.Name, @"\[.*\]"))
+                    )
+                ).ToList();
+
+                // Add the first component as [Primary] if it's not already in the list
+                if (mFileBOM.CompArray.Length > 0)
+                {
+                    var firstComp = mFileBOM.CompArray[0];
+                    if (firstComp.XRefId == -1 && !msArray.Contains(firstComp))
+                    {
+                        msArray.Insert(0, firstComp);
+                    }
+                }
+            }
+
+            var mMdlStates = new Dictionary<string, long>();
+
+            if (msArray.Count > 1)
+            {
+                foreach (var comp in msArray)
+                {
+                    string mName = "";
+
+                    if (mCadProvider == "SolidWorks")
+                    {
+                        if (comp.Name != null)
+                        {
+                            var nameParts = comp.Name.Split('@');
+                            if (nameParts.Length == 2 && nameParts[1] == mFile.Name)
+                            {
+                                mName = nameParts[0];
+                            }
+                            else
+                            {
+                                mName = comp.Name;
+                            }
+                        }
+                    }
+                    else if (mCadProvider == "Inventor")
+                    {
+                        if (comp.Name != null && comp.Name.Contains(" (") && comp.Name.Contains(")"))
+                        {
+                            int startIndex = comp.Name.IndexOf(" (");
+                            int endIndex = comp.Name.IndexOf(")");
+                            if (startIndex >= 0 && endIndex > startIndex)
+                            {
+                                mName = comp.Name.Substring(startIndex + 2, endIndex - startIndex - 2);
+                            }
+                        }
+                        else
+                        {
+                            mName = "[Primary]";
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(mName) && !mMdlStates.ContainsKey(mName))
+                    {
+                        mMdlStates.Add(mName, comp.Id);
+                    }
+                }
+            }
+
+            return mMdlStates;
+        }
+
+        /// <summary>
+        /// Read the structured BOM (Inventor BOM: Structured = Enabled)
+        /// </summary>
+        /// <param name="conn">Vault connection</param>
+        /// <param name="fileId">File ID</param>
+        /// <param name="bomCompId">BOM Component ID (use root component or model state ID)</param>
+        /// <param name="returnMessage"></param>
+        /// <returns>List of BOM items</returns>
+        public List<BomRow> GetFileBOM(Connection conn, long fileId, long bomCompId, ref bool structured, ref string returnMessage)
+        {
+            var bomItems = new List<BomRow>();
+            ACW.BOM mFileBom = null;
+            try
+            {
+                mFileBom = conn.WebServiceManager.DocumentService.GetBOMByFileId(fileId);
+            }
+            catch (Exception)
+            {
+                // unhandled are changes in the BOM scheme, a new check-in of the file will resolve it in most cases
+                returnMessage = "Could not read item data of the file. For legacy files, a new check-in of the file might resolve the issue.";
+                return bomItems;
+            }
+
+            // return a message if the BOM is empty
+            if (mFileBom == null)
+            {
+                returnMessage = "The file does not contain item data; use 'Extract Item Data' to update." +
+                    " Note - iAssembly Factories don't display BOM data; select a member file instead.";
+                return bomItems;
+            }
+
+            // return a message if the BOM exists without any active BOM rows
+            if (mFileBom.InstArray.Length == 0)
+            {
+                returnMessage = "The file does not have active BOM rows.";
+                return bomItems;
+            }
+
+            // check for structured BOM scheme and process it; if not found try to process the Model BOM scheme
+            BOMSchm schm = null;
+            if (mFileBom.SchmArray != null)
+            {
+                try
+                {
+                    schm = mFileBom.SchmArray.FirstOrDefault(s => s.SchmTyp == SchemeTypeEnum.Structured && s.RootCompId == bomCompId);
+                    // Only call ReadStructuredBom if schm is not null
+                    if (schm != null)
+                    {
+                        ReadStructuredBom(conn, mFileBom, schm, bomItems);
+                        structured = true;
+                    }
+                    else
+                    {
+                        // if no structured scheme is found, attempt to read the Model BOM structure (Inventor BOM: Model)
+                        ReadModelBom(conn, mFileBom, bomItems);
+                        structured = false;
+                    }
+                }
+                catch (Exception) { }
+            }
+            else
+            {
+                // if no structured scheme is found, attempt to read the Model BOM structure (Inventor BOM: Model)
+                ReadModelBom(conn, mFileBom, bomItems);
+                structured = false;
+            }
+
+            // reset previously used variable to prevent unintended reuse
+            occurrences = null;
+
+            return bomItems.OrderBy(b => b.Position).ToList();
+        }
+
+
+        /// <summary>
+        /// Read the model BOM
+        /// </summary>
+        /// <param name="conn">Vault connection</param>
+        /// <param name="parentBom">BOM object retrieved from DocumentService.GetBOMByFileId</param>
+        /// <param name="bomItems">List to populate with BOM items</param>
+        private void ReadModelBom(Connection conn, ACW.BOM parentBom, List<BomRow> bomItems)
+        {
+            var propDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
+            var thumbnailPropDef = propDefs.FirstOrDefault(n => n.SysName == "Thumbnail");
+
+            var cldIds = new List<long>();
+
+            // Get child IDs from instances where ParId equals 0
+            var topLevelInsts = parentBom.InstArray?.Where(i => i.ParId == 0).ToList();
+            if (topLevelInsts == null || !topLevelInsts.Any())
+            {
+                return;
+            }
+
+            foreach (var inst in topLevelInsts)
+            {
+                var comp = parentBom.CompArray?.FirstOrDefault(c => c.Id == inst.CldId);
+                if (comp != null && comp.XRefId != -1)
+                {
+                    cldIds.Add(comp.XRefId);
+                }
+            }
+
+            if (cldIds.Count == 0)
+            {
+                return;
+            }
+
+            ACW.BOM[] cldBoms = conn.WebServiceManager.DocumentService.GetBOMByFileIds(cldIds.ToArray());
+            var schm = parentBom.SchmArray != null ? parentBom.SchmArray.FirstOrDefault(s => s.SchmTyp == SchemeTypeEnum.Structured && s.RootCompId == 0) : null;
+
+            int cldBomCounter = 0;
+
+            foreach (var inst in topLevelInsts)
+            {
+                var bomItem = new BomRow();
+                long cldId = inst.CldId;
+
+                bomItem.Quantity = (float)(inst.QuantOverde == -1 ? inst.Quant : inst.QuantOverde);
+
+                var comp = parentBom.CompArray?.FirstOrDefault(c => c.Id == cldId);
+                if (comp == null) continue;
+
+                if (schm != null)
+                {
+                    var occur = parentBom.SchmOccArray?.FirstOrDefault(o => o.SchmId == schm.Id && o.CompId == cldId);
+                    if (occur != null)
+                    {
+                        bomItem.Position = int.TryParse(occur.DtlId, out int pos) ? pos : (int)occur.Id;
+                    }
+                }
+                else
+                {
+                    bomItem.Position = cldBomCounter + 1;
+                }
+
+                ACW.BOM cldBom;
+                if (comp.XRefId == -1)
+                {
+                    cldBom = parentBom;
+                }
+                else
+                {
+                    if (cldBoms != null && cldBomCounter < cldBoms.Length)
+                    {
+                        cldBom = cldBoms[cldBomCounter++];
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                string uniqueId = comp.UniqueId;
+                var cldComp = cldBom.CompArray?.FirstOrDefault(c => c.UniqueId == uniqueId && c.XRefId == -1);
+                if (cldComp == null && cldBom.CompArray != null && cldBom.CompArray.Length > 0)
+                {
+                    cldComp = cldBom.CompArray[0];
+                }
+
+                if (cldComp != null)
+                {
+                    bomItem.Name = cldComp.Name;
+                    bomItem.ComponentType = cldComp.CompTyp.ToString();
+
+                    var cldCompAttrArray = cldBom.CompAttrArray.Where(ca => ca.CompId == cldComp.Id).ToArray();
+                    if (cldCompAttrArray.Length == 0)
+                    {
+                        cldCompAttrArray = cldBom.CompAttrArray;
+                    }
+
+                    if (cldCompAttrArray != null)
+                    {
+                        var propPartNumber = cldBom.PropArray?.FirstOrDefault(p => p.DispName == "Part Number");
+                        if (propPartNumber != null)
+                        {
+                            var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == propPartNumber.Id);
+                            if (prop != null)
+                            {
+                                bomItem.PartNumber = prop.Val;
+                            }
+                        }
+
+                        if (cldComp.CompTyp != ComponentTypeEnum.Virtual)
+                        {
+                            propDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
+                            thumbnailPropDef = propDefs.FirstOrDefault(n => n.SysName == "Thumbnail");
+
+                            if (thumbnailPropDef != null && comp.XRefId != -1 && cldBomCounter > 0 && cldBomCounter <= cldIds.Count)
+                            {
+                                var thumbnailProp = conn.WebServiceManager.PropertyService.GetProperties("FILE",
+                                    new long[] { cldIds[cldBomCounter - 1] },
+                                    new long[] { thumbnailPropDef.Id })[0];
+                                bomItem.Thumbnail = thumbnailProp.Val as byte[];
+                            }
+                        }
+                        else
+                        {
+                            // Load virtual component thumbnail from embedded resource
+                            if (_virtualCompThumbnail == null)
+                            {
+                                _virtualCompThumbnail = GetImageResourceAsByteArray("VirtualComp_32");
+                            }
+
+                            bomItem.Thumbnail = _virtualCompThumbnail;
+                        }
+
+                        var titleProp = cldBom.PropArray?.FirstOrDefault(p => p.DispName == "Title");
+                        if (titleProp != null)
+                        {
+                            var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == titleProp.Id);
+                            if (prop != null)
+                            {
+                                bomItem.Title = prop.Val;
+                            }
+                        }
+
+                        var descProp = cldBom.PropArray?.FirstOrDefault(p => p.DispName == "Description");
+                        if (descProp != null)
+                        {
+                            var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == descProp.Id);
+                            if (prop != null)
+                            {
+                                bomItem.Description = prop.Val;
+                            }
+                        }
+
+                        var matProp = cldBom.PropArray?.FirstOrDefault(p => p.DispName == "Material");
+                        if (matProp != null)
+                        {
+                            var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == matProp.Id);
+                            if (prop != null)
+                            {
+                                bomItem.Material = prop.Val;
+                            }
+                        }
+
+                        // Function Designation is a bom row property in Vault, and optionally an instance property in Inventor; we need to to handle both cases to get the value if it exists
+                        var funcProp = parentBom.PropArray.FirstOrDefault(p => p.DispName == "Functional Designation");
+                        if (funcProp != null)
+                        {
+                            // we need to lookup the instance attribute matching the current instance id
+                            if (parentBom?.InstArray?.Length >= 1)
+                            {
+
+                                var instArrayMatch = parentBom.InstArray.FirstOrDefault(i => i.Id == inst.Id);
+                                if (instArrayMatch != null)
+                                {
+                                    var instProp = parentBom.InstPropArray.FirstOrDefault(p => p.InstId == instArrayMatch.Id);
+                                    if (instProp != null && instProp.PropId == funcProp.Id)
+                                    {
+                                        bomItem.FunctionalDesignation = instProp.Val;
+                                    }
+                                    else // no instance property, check for a component property
+                                    {
+                                        var compProp = cldBom?.PropArray?.FirstOrDefault(p => p.DispName == "Functional Designation");
+                                        if (compProp != null)
+                                        {
+                                            var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == compProp.Id);
+                                            if (prop != null)
+                                            {
+                                                bomItem.FunctionalDesignation = prop.Val;
+                                            }
+                                        }
+                                    }
+                                }
+                                else // no matching instance array, check for a component property
+                                {
+                                    var compProp = cldBom?.PropArray?.FirstOrDefault(p => p.DispName == "Functional Designation");
+                                    if (compProp != null)
+                                    {
+                                        var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == compProp.Id);
+                                        if (prop != null)
+                                        {
+                                            bomItem.FunctionalDesignation = prop.Val;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                bomItems.Add(bomItem);
+            }
+        }
+
+
+        /// <summary>
+        /// Process a BOM level (recursively if needed in future)
+        /// </summary>
+        private void ReadStructuredBom(Connection conn, ACW.BOM parentBom, ACW.BOMSchm schm, List<BomRow> bomItems)
+        {
+            // read the occurrences for the current level; filter on ParOccurId = -1 to get only the top-level occurrences for the given component or model state
+            try
+            {
+                occurrences = parentBom.SchmOccArray.Where(o => o.SchmId == schm.Id && o.ParOccurId == -1).ToList();
+                // return if no occurrences are found for the given BOM scheme
+                if (occurrences == null || !occurrences.Any())
+                {
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            var cldIds = new List<long>();
+            foreach (BOMSchmOccur occur in occurrences)
+            {
+                var comp = parentBom.CompArray.FirstOrDefault(c => c.Id == occur.CompId);
+                if (comp != null && comp.XRefId != -1)
+                {
+                    cldIds.Add(comp.XRefId);
+                }
+            }
+
+            ACW.BOM[] cldBoms = null;
+            if (cldIds.Count > 0)
+            {
+                cldBoms = conn.WebServiceManager.DocumentService.GetBOMByFileIds(cldIds.ToArray());
+            }
+
+            int cldBomCounter = 0;
+
+            foreach (BOMSchmOccur occur in occurrences)
+            {
+                var comp = parentBom.CompArray.FirstOrDefault(c => c.Id == occur.CompId);
+                if (comp == null) continue;
+
+                var inst = parentBom.InstArray.FirstOrDefault(i => i.CldId == occur.CompId);
+                if (inst == null) continue;
+
+                ACW.BOM cldBom;
+                if (comp.XRefId == -1)
+                {
+                    cldBom = parentBom;
+                }
+                else
+                {
+                    if (cldBoms != null && cldBomCounter < cldBoms.Length)
+                    {
+                        cldBom = cldBoms[cldBomCounter++];
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                var bomItem = new BomRow();
+
+                bomItem.Quantity = (float)(inst.QuantOverde == -1 ? inst.Quant : inst.QuantOverde);
+
+                if (int.TryParse(occur.DtlId, out int position))
+                {
+                    bomItem.Position = position;
+                }
+                else
+                {
+                    bomItem.Position = (int)occur.Id;
+                }
+
+                string uniqueId = comp.UniqueId;
+                var cldComp = cldBom.CompArray.FirstOrDefault(c => c.UniqueId == uniqueId && c.XRefId == -1);
+                if (cldComp == null && cldBom.CompArray.Length > 0)
+                {
+                    cldComp = cldBom.CompArray[0];
+                }
+
+                if (cldComp != null)
+                {
+                    bomItem.Name = cldComp.Name;
+                    bomItem.ComponentType = cldComp.CompTyp.ToString();
+
+                    var cldCompAttrArray = cldBom.CompAttrArray.Where(ca => ca.CompId == cldComp.Id).ToArray();
+                    if (cldCompAttrArray.Length == 0)
+                    {
+                        cldCompAttrArray = cldBom.CompAttrArray;
+                    }
+
+                    var propPartNumber = cldBom.PropArray.FirstOrDefault(p => p.DispName == "Part Number");
+                    if (propPartNumber != null)
+                    {
+                        var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == propPartNumber.Id);
+                        if (prop != null)
+                        {
+                            bomItem.PartNumber = prop.Val;
+                        }
+                    }
+
+                    if (cldComp.CompTyp != ComponentTypeEnum.Virtual)
+                    {
+                        var propDefs = conn.WebServiceManager.PropertyService.GetPropertyDefinitionsByEntityClassId("FILE");
+                        var thumbnailPropDef = propDefs.FirstOrDefault(n => n.SysName == "Thumbnail");
+
+                        if (thumbnailPropDef != null && comp.XRefId != -1 && cldBomCounter > 0 && cldBomCounter <= cldIds.Count)
+                        {
+                            var thumbnailProp = conn.WebServiceManager.PropertyService.GetProperties("FILE",
+                                new long[] { cldIds[cldBomCounter - 1] },
+                                new long[] { thumbnailPropDef.Id })[0];
+                            bomItem.Thumbnail = thumbnailProp.Val as byte[];
+                        }
+                    }
+                    else
+                    {
+                        // Load virtual component thumbnail from embedded resource
+                        if (_virtualCompThumbnail == null)
+                        {
+                            _virtualCompThumbnail = GetImageResourceAsByteArray("VirtualComp_32");
+                        }
+
+                        bomItem.Thumbnail = _virtualCompThumbnail;
+                    }
+
+                    var titleProp = cldBom.PropArray.FirstOrDefault(p => p.DispName == "Title");
+                    if (titleProp != null)
+                    {
+                        var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == titleProp.Id);
+                        if (prop != null)
+                        {
+                            bomItem.Title = prop.Val;
+                        }
+                    }
+
+                    var descProp = cldBom.PropArray.FirstOrDefault(p => p.DispName == "Description");
+                    if (descProp != null)
+                    {
+                        var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == descProp.Id);
+                        if (prop != null)
+                        {
+                            bomItem.Description = prop.Val;
+                        }
+                    }
+
+                    var matProp = cldBom.PropArray.FirstOrDefault(p => p.DispName == "Material");
+                    if (matProp != null)
+                    {
+                        var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == matProp.Id);
+                        if (prop != null)
+                        {
+                            bomItem.Material = prop.Val;
+                        }
+                    }
+
+                    // Resolve the instance matching this occurrence before the Functional Designation lookup.
+                    // The promoted component check must run first because:
+                    //   a) detection is at instance level (BOMInst.UniqueId == "" and ParId != 0), not occurrence level
+                    //   b) for promoted components the FD property definition may only exist in the phantom
+                    //      subassembly's BOM and not in parentBom, so a parentBom funcProp lookup would
+                    //      short-circuit and skip FD entirely if checked first
+                    //
+                    // Lookup strategy: SchemeOccurrenceId is the most direct link between a BOMInst and its
+                    // BOMSchmOccur, but it is only populated when Vault explicitly binds the instance to the
+                    // scheme (i.e. for normal, non-promoted instances). For promoted instances SchemeOccurrenceId
+                    // is typically 0. Falling back to i.Id == occur.Id is unsafe because instance IDs and
+                    // occurrence IDs are from different ID spaces and will only match by coincidence.
+                    //
+                    // Instead, for each occurrence we use CldId-based positional matching: collect all instances
+                    // in parentBom.InstArray whose CldId matches occur.CompId, then pick the one at the same
+                    // ordinal position as the current occurrence among all occurrences sharing that CompId.
+                    // This correctly handles multiple occurrences of the same component in the same phantom.
+                    BOMInst instArrayMatch = null;
+                    if (parentBom.InstArray.Length >= 1)
+                    {
+                        // First try the direct SchemeOccurrenceId link (reliable for normal instances)
+                        instArrayMatch = parentBom.InstArray.FirstOrDefault(i => i.SchemeOccurrenceId == occur.Id);
+
+                        if (instArrayMatch == null)
+                        {
+                            // Fallback: positional match by CldId among occurrences that share the same CompId
+                            var siblingsOccurrences = ((IEnumerable<BOMSchmOccur>)occurrences)
+                                .Where(o => o.CompId == occur.CompId)
+                                .ToList();
+                            int occurIdx = siblingsOccurrences.IndexOf(occur);
+
+                            var candidateInsts = parentBom.InstArray
+                                .Where(i => i.CldId == occur.CompId)
+                                .ToList();
+
+                            if (occurIdx >= 0 && occurIdx < candidateInsts.Count)
+                                instArrayMatch = candidateInsts[occurIdx];
+                        }
+                    }
+
+                    if (instArrayMatch != null && instArrayMatch.UniqueId == "" && instArrayMatch.ParId != 0)
+                    {
+                        // Promoted component: BOMInst.UniqueId == "" and ParId != 0 confirm this instance
+                        // belongs to a phantom subassembly promoted one level higher in the structured BOM.
+                        // Navigate: instArrayMatch.ParId → phantom's own instance → phantom component → phantom BOM.
+                        // FD is looked up exclusively from the phantom BOM's InstPropArray since it may not
+                        // exist in parentBom at all.
+                        var phantomParentInst = parentBom.InstArray
+                            .FirstOrDefault(i => i.Id == instArrayMatch.ParId);
+                        if (phantomParentInst != null)
+                        {
+                            var phantomComp = parentBom.CompArray
+                                .FirstOrDefault(c => c.Id == phantomParentInst.CldId);
+                            if (phantomComp != null && phantomComp.XRefId != -1)
+                            {
+                                var phantomBoms = conn.WebServiceManager.DocumentService
+                                    .GetBOMByFileIds(new long[] { phantomComp.XRefId });
+                                var phantomBom = phantomBoms != null ? phantomBoms.FirstOrDefault() : null;
+                                if (phantomBom != null)
+                                {
+                                    // FD property definition is resolved from the phantom BOM —
+                                    // it may not exist in parentBom at all
+                                    var funcPropInPhantom = phantomBom.PropArray != null
+                                        ? phantomBom.PropArray.FirstOrDefault(p => p.DispName == "Functional Designation")
+                                        : null;
+                                    if (funcPropInPhantom != null)
+                                    {
+                                        // Correlation: group all promoted instances sharing the same phantom
+                                        // parent (ParId == instArrayMatch.ParId) in the order they appear in
+                                        // parentBom.InstArray; the i-th promoted instance maps to the i-th
+                                        // top-level instance (ParId == 0) in the phantom BOM's InstArray.
+                                        var promotedInstsForPhantom = parentBom.InstArray
+                                            .Where(i => i.ParId == instArrayMatch.ParId)
+                                            .ToList();
+                                        int idx = promotedInstsForPhantom
+                                            .FindIndex(i => i.Id == instArrayMatch.Id);
+
+                                        // Filter to actual child instances only; ParId == 0 alone can include a
+                                        // self-referential root entry for the phantom assembly itself (XRefId == -1
+                                        // on its component), which would shift all indices by one and cause the
+                                        // first promoted occurrence to map to the root instead of a real child.
+                                        List<BOMInst> phantomChildInsts = null;
+                                        if (phantomBom.InstArray != null)
+                                        {
+                                            phantomChildInsts = phantomBom.InstArray
+                                                .Where(i => i.ParId == 0 &&
+                                                            phantomBom.CompArray != null &&
+                                                            phantomBom.CompArray.FirstOrDefault(c => c.Id == i.CldId) != null &&
+                                                            phantomBom.CompArray.FirstOrDefault(c => c.Id == i.CldId).XRefId != -1)
+                                                .ToList();
+                                        }
+
+                                        if (phantomChildInsts != null && idx >= 0 && idx < phantomChildInsts.Count)
+                                        {
+                                            var fdInstProp = phantomBom.InstPropArray != null
+                                                ? phantomBom.InstPropArray.FirstOrDefault(p =>
+                                                    p.InstId == phantomChildInsts[idx].Id
+                                                    && p.PropId == funcPropInPhantom.Id)
+                                                : null;
+                                            if (fdInstProp != null)
+                                                bomItem.FunctionalDesignation = fdInstProp.Val;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Normal component: Function Designation is a bom row property in Vault, and optionally an instance property in Inventor; we need to to handle both cases to get the value if it exists
+                        var funcProp = parentBom.PropArray.FirstOrDefault(p => p.DispName == "Functional Designation");
+                        if (funcProp != null)
+                        {
+                            if (instArrayMatch != null)
+                            {
+                                var instProp = parentBom.InstPropArray.FirstOrDefault(p => p.InstId == instArrayMatch.Id);
+                                if (instProp != null && instProp.PropId == funcProp.Id)
+                                {
+                                    bomItem.FunctionalDesignation = instProp.Val;
+                                }
+                                else // no instance property, check for a component property
+                                {
+                                    var compProp = cldBom.PropArray.FirstOrDefault(p => p.DispName == "Functional Designation");
+                                    if (compProp != null)
+                                    {
+                                        var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == compProp.Id);
+                                        if (prop != null)
+                                        {
+                                            bomItem.FunctionalDesignation = prop.Val;
+                                        }
+                                    }
+                                }
+                            }
+                            else // no matching instance array, check for a component property
+                            {
+                                var compProp = cldBom.PropArray.FirstOrDefault(p => p.DispName == "Functional Designation");
+                                if (compProp != null)
+                                {
+                                    var prop = cldCompAttrArray.FirstOrDefault(ca => ca.PropId == compProp.Id);
+                                    if (prop != null)
+                                    {
+                                        bomItem.FunctionalDesignation = prop.Val;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Check if we need to process nested BOM structure
+                    // Add criteria here to determine if we should iterate cldBom occurrences
+                    if (ShouldProcessNestedBOM(cldComp, cldBom))
+                    {
+                        var nestedSchm = cldBom.SchmArray.FirstOrDefault(s => s.SchmTyp == SchemeTypeEnum.Structured && s.RootCompId == cldComp.Id);
+                        if (nestedSchm != null)
+                        {
+                            ReadStructuredBom(conn, cldBom, nestedSchm, bomItems);
+                        }
+                    }
+                }
+
+                bomItems.Add(bomItem);
+            }
+        }
+
+        /// <summary>
+        /// Determines if a nested BOM should be processed
+        /// </summary>
+        private bool ShouldProcessNestedBOM(ACW.BOMComp component, ACW.BOM bom)
+        {
+            // Add your criteria here to determine if nested iteration is needed
+            // Example criteria:
+            // - Component type check
+            // - Specific property values
+            // - Number of child components
+
+            // Default: don't process nested BOMs
+            return false;
+        }
+
+        #endregion CAD-BOM methods
+
     }
+
+    #endregion
 
     /// <summary>
     /// Class enabling the Document Tree
@@ -583,7 +1422,7 @@ namespace VdsSampleUtilities
                     m_PrtDoc = (INV.PartDocument)m_Inv.ActiveDocument;
                     INV.PartComponentDefinition componentDefinition = m_PrtDoc.ComponentDefinition;
                     INV.ShrinkwrapComponent shrinkwrapComponent = componentDefinition.ReferenceComponents.ShrinkwrapComponents[1];
-                    if ((shrinkwrapComponent?.ReferencedFile != null))
+                    if (shrinkwrapComponent != null && shrinkwrapComponent.ReferencedFile != null)
                     {
                         m_ModelPath = shrinkwrapComponent.ReferencedFile.FullFileName;
                         return m_ModelPath;
